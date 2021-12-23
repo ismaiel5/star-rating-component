@@ -4,6 +4,9 @@ class StarRatingElement extends HTMLElement {
 
     // shadow root
     this._root = this.attachShadow({ mode: "open" });
+
+    // Data variables
+    this._disabled = false;
   }
 
   connectedCallback() {
@@ -58,6 +61,16 @@ class StarRatingElement extends HTMLElement {
         .container .bottom > span:hover ~ span {
             color: #e7bd06;
         }
+        :host([disabled]) .container{
+            cursor: inherit;
+        }
+        :host([disabled]) .container .top{
+            display: none;
+        }
+        :host([disabled]) .container .bottom > span:hover,
+        :host([disabled]) .container .bottom > span:hover ~ span {
+            color: inherit;
+        }
 
     </style>
     <div class="container">
@@ -73,6 +86,23 @@ class StarRatingElement extends HTMLElement {
         </div>
     </div>
       `;
+
+    this._disabled = this.getAttribute("disabled") !== null;
+  }
+
+  static get observedAttribute() {
+    return ["disabled"];
+  }
+  attributeChangeCallback(name, oldValue, newValue) {
+    if (oldValue !== newValue) {
+      switch (name) {
+        case "disabled":
+          this._disabled = newValue !== null;
+          break;
+        default:
+          break;
+      }
+    }
   }
 }
 window.customElements.define("star-rating-component", StarRatingElement);
